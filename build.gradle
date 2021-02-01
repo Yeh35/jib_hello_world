@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'com.google.cloud.tools.jib' version '2.7.1'
+}
+
+group 'com.yeh35.jib.hellowrold.spring.boot'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jib {
+    from { //애플리케이션을 빌드 할 기본 이미지를 구성
+        image = 'azul/zulu-openjdk-alpine:11'
+    }
+    to { // 애플리케이션을 빌드 할 대상 이미지를 구성
+        image = 'jibhelloworld.azurecr.io/jib-hello-world'
+        tags = ["${project.version}".toString()]
+    }
+    container { //빌드 된 이미지에서 실행되는 컨테이너를 구성
+        mainClass = 'com.yeh35.jib.hellowrold.spring.boot.Application'
+        ports =  ['8080'] // Docker EXPOSE와 동일
+        volumes = ['/tmp'] // 컨테이너의 마운트 지점 목록을 지정
+    }
+}
